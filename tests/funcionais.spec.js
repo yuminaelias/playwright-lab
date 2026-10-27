@@ -1,0 +1,7 @@
+const {test,expect}=require('@playwright/test');
+test.beforeEach(async({page})=>{await page.goto('/');});
+test('login válido',async({page})=>{await page.getByLabel('Email').fill('admin@g3.test');await page.getByLabel('Senha').fill('Teste123!');await page.getByRole('button',{name:'Entrar'}).click();await expect(page.locator('#loginMsg')).toHaveText('Login efectuado com sucesso');});
+test('senha incorrecta deve ser rejeitada',async({page})=>{await page.getByLabel('Email').fill('admin@g3.test');await page.getByLabel('Senha').fill('errada');await page.getByRole('button',{name:'Entrar'}).click();await expect(page.locator('#loginMsg')).toHaveText('Credenciais inválidas');});
+test('cadastro exige nome e mercado',async({page})=>{await page.getByRole('button',{name:'Guardar vendedor'}).click();await expect(page.locator('#cadMsg')).toHaveText('Preencha todos os campos');await expect(page.locator('#lista li')).toHaveCount(0);});
+test('pesquisa filtra produtos',async({page})=>{await page.getByLabel('Pesquisar').fill('tom');await page.getByRole('button',{name:'Pesquisar'}).click();await expect(page.locator('#produtos li')).toHaveCount(1);await expect(page.locator('#produtos li').first()).toHaveText('Tomate');});
+test('modo com defeitos expõe falha de validação',async({page})=>{await page.getByLabel('Activar modo com defeitos intencionais').check();await page.getByRole('button',{name:'Guardar vendedor'}).click();await expect(page.locator('#cadMsg')).toHaveText('Preencha todos os campos');});
